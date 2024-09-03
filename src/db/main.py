@@ -11,7 +11,7 @@ async_engine = create_async_engine(url=settings.POSTGRES_URL, echo=True)
 async def init_db():
     """Create the database tables"""
     async with async_engine.begin() as conn:
-        from .models import Book
+        from .models import Book, Rocas, Localidades, Muestras
 
         await conn.run_sync(SQLModel.metadata.create_all)
 
