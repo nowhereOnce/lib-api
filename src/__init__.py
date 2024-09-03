@@ -13,9 +13,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Book service",
+    title="rocas",
     version="0.1.0",
-    description="A simple web service for a book application",
+    description="Plataforma del Instituto de Geología",
     lifespan=lifespan,
 )
 
