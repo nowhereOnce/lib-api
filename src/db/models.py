@@ -32,6 +32,8 @@ class Rocas(SQLModel, table=True):
     uid: UUID = Field(default_factory=uuid4, primary_key=True)
     nombre: str
     descripcion: str
+    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
     # Relación con Muestras
     muestras: List["Muestras"] = Relationship(back_populates="roca")
@@ -44,6 +46,8 @@ class Localidades(SQLModel, table=True):
     uid: UUID = Field(default_factory=uuid4, primary_key=True)
     nombre: str
     pais: str
+    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
     # Relación con Muestras
     muestras: List["Muestras"] = Relationship(back_populates="localidad")
@@ -58,6 +62,8 @@ class Muestras(SQLModel, table=True):
     corte: bool
     lamina_delgada: bool
     foto: str
+    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+    updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
     # Relación con Rocas
     roca: Optional[Rocas] = Relationship(back_populates="muestras")
