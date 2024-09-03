@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from src.db.main import init_db
-from src.books.routes import rocas_router
+from src.rocas.routes import rocas_router
 
 
 @asynccontextmanager
