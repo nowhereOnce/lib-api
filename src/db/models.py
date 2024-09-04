@@ -61,7 +61,7 @@ class Muestras(SQLModel, table=True):
     localidad_uid: UUID = Field(default=None, foreign_key="localidades.uid")
     corte: bool
     lamina_delgada: bool
-    foto: str
+    foto: str #probablemente se tenga que modificar
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
