@@ -1,5 +1,3 @@
-# Book API endpoints
-
 from fastapi import APIRouter, Depends
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
