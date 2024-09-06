@@ -3,34 +3,34 @@ from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
-# NOTA: Probablemente sea necesario crear otro modelo de respuesta de las muestras donde se
-# muestren las muestras filtradas por roca y localidad en lugar de su UID
-
-#Verificar si es necesario que esta clase herede de la clase Rocas
 class MuestraResponseModel(BaseModel):
     """
         Clase para validad la respuesta de muestra
     """
     uid: UUID
-    roca_uid: UUID
-    localidad_uid: UUID
     corte: bool
     lamina_delgada: bool
-    foto: str #problablemente se tenga que modificar
+    foto: str
     created_at: datetime
     updated_at: datetime
+    nombre_roca: str
+    descripcion_roca: str
+    nombre_localidad: str
+    pais_localidad: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "uid": "a5b6c7d8e9f10",
-                "roca_uid": "a5b6c7d8e9f10",
-                "localidad_uid": "a5b6c7d8e9f10",
                 "corte": True,
                 "lamina_delgada": True,
-                "fotos": "url_foto",
+                "foto": "url_foto",
                 "created_at": "2022-01-01T00:00:00",
                 "updated_at": "2022-01-01T00:00:00",
+                "nombre_roca": "nombre_roca",
+                "descripcion_roca": "descripcion_roca",
+                "nombre_localidad": "nombre_localidad",
+                "pais_localidad": "pais_localidad"
             }
         }
     }

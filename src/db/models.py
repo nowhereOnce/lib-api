@@ -31,7 +31,7 @@ class Rocas(SQLModel, table=True):
     """
     uid: UUID = Field(default_factory=uuid4, primary_key=True)
     nombre: str
-    descripcion: str
+    descripcion: str | None = None
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     

@@ -1,6 +1,6 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.models import Muestras, Rocas, Localidades
-from .schemas import MuestraCreateModel
+from .schemas import MuestraCreateModel, MuestraResponseModel
 from sqlmodel import select
 
 
@@ -12,17 +12,6 @@ class MuestraService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    # Pendiente: Intentar realizar la siguiente consulta de SQL:
-    # SELECT 
-    # m.*,  -- Todos los campos de Muestras
-    # r.nombre AS nombre_roca,  -- Información de Rocas
-    # l.nombre AS nombre_localidad  -- Información de Localidades
-    # FROM 
-    #     muestras m
-    # JOIN 
-    #     rocas r ON m.roca_uid = r.uid  -- Relaciona Muestras con Rocas
-    # JOIN 
-    #     localidades l ON m.localidad_uid = l.uid;  -- Relaciona Muestras con Localidades
 
     async def get_all_muestras(self):
         """
@@ -31,9 +20,20 @@ class MuestraService:
         Returns:
             list: una lista de muestras
         """
-        statement = select(Muestras).order_by(Muestras.created_at)
+        statement = select(Muestras, Rocas, Localidades).join(Muestras.roca).join(Muestras.localidad).order_by(Muestras.created_at)
         result = await self.session.exec(statement)
-        return result.all()
+        return [MuestraResponseModel(
+            uid=muestra.uid, 
+            corte=muestra.corte,
+            lamina_delgada=muestra.lamina_delgada,
+            foto=muestra.foto,
+            created_at=muestra.created_at,
+            updated_at=muestra.updated_at,
+            nombre_roca=muestra.roca.nombre,
+            descripcion_roca=muestra.roca.descripcion,
+            nombre_localidad=muestra.localidad.nombre,
+            pais_localidad=muestra.localidad.pais
+            ) for muestra, _, _ in result]
 
     async def create_muestra(self, muestra_create_data: MuestraCreateModel):
         """
