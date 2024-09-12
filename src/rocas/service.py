@@ -1,83 +1,83 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.db.models import Rocas
-from .schemas import RocaCreateModel
+from src.db.models import Rocks
+from .schemas import RockCreateModel
 from sqlmodel import select
 
 
-class RocaService:
+class RockService:
     """
-    Esta clase provee los metodos para crear, leer, actualizar, y eliminar rocas
+    This class provides all the methods to create, read, update and delete rocks from the Rocks table
     """
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_all_rocas(self):
+    async def get_all_rocks(self):
         """
-        Obtiene una lista con todas las rocas
+        Gets a list with all the rocks
 
         Returns:
-            list: una lista de rocas
+            list: list of rocks
         """
-        statement = select(Rocas).order_by(Rocas.created_at)
+        statement = select(Rocks).order_by(Rocks.created_at)
         result = await self.session.exec(statement)
         return result.all()
 
-    async def create_roca(self, roca_create_data: RocaCreateModel):
+    async def create_rock(self, rock_create_data: RockCreateModel):
         """
-        Crea una nueva roca en la base de datos
+        Creates a new rock in the database
 
         Args:
-            roca_create_data (RocaCreateModel): data para crear una nueva roca
+            rock_create_data (RockCreateModel): data to create a new rock
 
         Returns:
-            Rocas: una nueva roca
+            Rocks: a new rock
         """
-        new_roca = Rocas(**roca_create_data.model_dump())
-        self.session.add(new_roca)
+        new_rock = Rocks(**rock_create_data.model_dump())
+        self.session.add(new_rock)
         await self.session.commit()
-        return new_roca
+        return new_rock
 
-    async def get_roca(self, roca_uid: str):
-        """Obtiene una roca por su UUID.
+    async def get_rock(self, rock_uid: str):
+        """Gets a rock by its UUID.
 
         Args:
-            roca_uid (str): el UUID de la roca
+            rock_uid (str): rock's UUID 
 
         Returns:
-            Rocas: un objeto roca
+            Rocks: a rock object
         """
-        statement = select(Rocas).where(Rocas.uid == roca_uid)
+        statement = select(Rocks).where(Rocks.uid == rock_uid)
         result = await self.session.exec(statement)
         return result.first()
 
-    async def update_roca(self, roca_uid: str, roca_update_data: RocaCreateModel):
-        """Actualiza una roca
+    async def update_rock(self, rock_uid: str, rock_update_data: RockCreateModel):
+        """Updates a rock
 
         Args:
-            roca_uid (str): el UUID de la roca
-            roca_update_data (BookCreateModel): la data para actualizar la roca
+            rock_uid (str): rock's UUID
+            rock_update_data (RockCreateModel): data to update the rock
 
         Returns:
-            Rocas: la roca actualizada
+            Rocks: updated rock
         """
 
-        statement = select(Rocas).where(Rocas.uid == roca_uid)
+        statement = select(Rocks).where(Rocks.uid == rock_uid)
         result = await self.session.exec(statement)
-        roca = result.first()
-        for key, value in roca_update_data.model_dump().items():
-            setattr(roca, key, value)
+        rock = result.first()
+        for key, value in rock_update_data.model_dump().items():
+            setattr(rock, key, value)
         await self.session.commit()
-        return roca
+        return rock
 
-    async def delete_roca(self, roca_uid):
-        """Borra una roca
+    async def delete_rock(self, rock_uid):
+        """Deletes a rock
 
         Args:
-            roca_uid (str): el UUID de la roca
+            rock_uid (str): rock's UUID
         """
-        statement = select(Rocas).where(Rocas.uid == roca_uid)
+        statement = select(Rocks).where(Rocks.uid == rock_uid)
         result = await self.session.exec(statement)
-        roca = result.first()
-        await self.session.delete(roca)
+        rock = result.first()
+        await self.session.delete(rock)
         await self.session.commit()

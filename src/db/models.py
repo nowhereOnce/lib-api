@@ -4,69 +4,50 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional, List
 
-class Book(SQLModel, table = True):
-    """
-    This class represents a book in the database
-    """
-    __tablename__ = 'books'
-    uid:UUID = Field(
-        sa_column=Column(pg.UUID ,primary_key=True,
-        unique=True, default=uuid4)
-    )
-    title:str
-    author:str
-    isbn:str
-    description:str
-    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
-    updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
+#Table Models
 
-    def __repr__(self) -> str:
-        return f"Book => {self.title}"
-
-# Clases de la base de datos de rocas
-#------------------------------------------------------------------
-class Rocas(SQLModel, table=True):
+class Rocks(SQLModel, table=True):
     """
-    Esta clase representa una roca en la base de datos
+    This class represents a rock in the database
     """
     uid: UUID = Field(default_factory=uuid4, primary_key=True)
-    nombre: str
-    descripcion: str | None = None
+    name: str
+    description: str | None = None
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
-    # Relación con Muestras
-    muestras: List["Muestras"] = Relationship(back_populates="roca")
+    # Relationship with Samples
+    samples: List["Samples"] = Relationship(back_populates="rock")
 
 
-class Localidades(SQLModel, table=True):
+class Locations(SQLModel, table=True):
     """
-    Esta clase representa una localidad en la base de datos
+    This class represents a location in the database
     """
     uid: UUID = Field(default_factory=uuid4, primary_key=True)
-    nombre: str
-    pais: str
+    name: str
+    country: str
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
-    # Relación con Muestras
-    muestras: List["Muestras"] = Relationship(back_populates="localidad")
+    # Relationship with Samples
+    samples: List["Samples"] = Relationship(back_populates="location")
 
-class Muestras(SQLModel, table=True):
+class Samples(SQLModel, table=True):
     """
-    Esta clase representa una muestra con roca y localidad en la base de datos
+    This class represents a sample in the database (Has relationships with Rocks and Locations)
     """
     uid: UUID = Field(default_factory=uuid4, primary_key=True)
-    roca_uid: UUID = Field(default=None, foreign_key="rocas.uid")
-    localidad_uid: UUID = Field(default=None, foreign_key="localidades.uid")
-    corte: bool
-    lamina_delgada: bool
-    foto: str #probablemente se tenga que modificar
+    rock_uid: UUID = Field(default=None, foreign_key="rocks.uid")
+    location_uid: UUID = Field(default=None, foreign_key="locations.uid")
+    cut: bool
+    thin_section: bool
+    picture: str #subject to change
     created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     updated_at:datetime = Field(sa_column=Column(pg.TIMESTAMP, default=datetime.now))
     
-    # Relación con Rocas
-    roca: Optional[Rocas] = Relationship(back_populates="muestras")
+    # Relationship with Rocks
+    rock: Optional[Rocks] = Relationship(back_populates="samples")
     
-    # Relación con Localidades
-    localidad: Optional[Localidades] = Relationship(back_populates="muestras")
+    # Relationship with Locations
+    location: Optional[Locations] = Relationship(back_populates="samples")

@@ -1,83 +1,83 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.db.models import Localidades
-from .schemas import LocalidadCreateModel
+from src.db.models import Locations
+from .schemas import LocationCreateModel
 from sqlmodel import select
 
 
-class LocalidadService:
+class LocationService:
     """
-    Esta clase provee los metodos para crear, leer, actualizar, y eliminar localidades
+    This class provides the methods to create, read, update and delete a location
     """
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_all_localidades(self):
+    async def get_all_locations(self):
         """
-        Obtiene una lista con todas las localidades
+        Gets a list with all the locations
 
         Returns:
-            list: una lista de localidades
+            list: list of locations
         """
-        statement = select(Localidades).order_by(Localidades.created_at)
+        statement = select(Locations).order_by(Locations.created_at)
         result = await self.session.exec(statement)
         return result.all()
 
-    async def create_localidad(self, localidad_create_data: LocalidadCreateModel):
+    async def create_location(self, location_create_data: LocationCreateModel):
         """
-        Crea una nueva localidad en la base de datos
+        Creates a new location in the database
 
         Args:
-            localidad_create_data (LocalidadCreateModel): data para crear una nueva localidad
+            location_create_data (LocationCreateModel): data to create a new location
 
         Returns:
-            Localidad: una nueva localidad
+            Location: a new location
         """
-        new_localidad = Localidades(**localidad_create_data.model_dump())
-        self.session.add(new_localidad)
+        new_location = Locations(**location_create_data.model_dump())
+        self.session.add(new_location)
         await self.session.commit()
-        return new_localidad
+        return new_location
 
-    async def get_localidad(self, localidad_uid: str):
-        """Obtiene una localidad por su UUID.
+    async def get_location(self, location_uid: str):
+        """Gets a location by its UUID.
 
         Args:
-            localidad_uid (str): el UUID de la localidad
+            location_uid (str): location's UUID
 
         Returns:
-            Localidades: un objeto localidad
+            Locations: an location object
         """
-        statement = select(Localidades).where(Localidades.uid == localidad_uid)
+        statement = select(Locations).where(Locations.uid == location_uid)
         result = await self.session.exec(statement)
         return result.first()
 
-    async def update_localidad(self, localidad_uid: str, localidad_update_data: LocalidadCreateModel):
-        """Actualiza una localidad
+    async def update_location(self, location_uid: str, location_update_data: LocationCreateModel):
+        """Updates a location
 
         Args:
-            localidad_uid (str): el UUID de la localidad
-            localidad_update_data (LocalidadCreateModel): la data para actualizar la localidad
+            location_uid (str): location's UIID
+            location_update_data (LocationCreateModel): data to update the location
 
         Returns:
-            Localidades: la localidad actualizada
+            Locations: updated location
         """
 
-        statement = select(Localidades).where(Localidades.uid == localidad_uid)
+        statement = select(Locations).where(Locations.uid == location_uid)
         result = await self.session.exec(statement)
-        localidad = result.first()
-        for key, value in localidad_update_data.model_dump().items():
-            setattr(localidad, key, value)
+        location = result.first()
+        for key, value in location_update_data.model_dump().items():
+            setattr(location, key, value)
         await self.session.commit()
-        return localidad
+        return location
 
-    async def delete_localidad(self, localidad_uid):
-        """Borra una localidad
+    async def delete_location(self, location_uid):
+        """Deletes a location
 
         Args:
-            localidad_uid (str): el UUID de la localidad
+            location_uid (str): location's UIID
         """
-        statement = select(Localidades).where(Localidades.uid == localidad_uid)
+        statement = select(Locations).where(Locations.uid == location_uid)
         result = await self.session.exec(statement)
-        localidad = result.first()
-        await self.session.delete(localidad)
+        location = result.first()
+        await self.session.delete(location)
         await self.session.commit()

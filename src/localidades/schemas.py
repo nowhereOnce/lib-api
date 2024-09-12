@@ -1,16 +1,15 @@
-from src.db.models import Localidades
+from src.db.models import Locations
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
-#Verificar si es necesario que esta clase herede de la clase Rocas
-class LocalidadResponseModel(BaseModel):
+class LocationResponseModel(BaseModel):
     """
-        Clase para validad la respuesta de roca
+        Class to validate the "location" type response
     """
     uid: UUID
-    nombre: str
-    pais: str
+    name: str
+    country: str
     created_at: datetime
     updated_at: datetime
 
@@ -18,26 +17,26 @@ class LocalidadResponseModel(BaseModel):
         "json_schema_extra": {
             "example": {
                 "uid": "a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0a",
-                "nombre": "Cordoba",
-                "pais": "Argentina",
+                "name": "Cordoba",
+                "country": "Argentina",
                 "created_at": "2022-01-01T00:00:00",
                 "updated_at": "2022-01-01T00:00:00",
             }
         }
     }
 
-class LocalidadCreateModel(BaseModel):
+class LocationCreateModel(BaseModel):
     """
-    Esta clase se usa para validar las solicitudes al crear o actualizar una roca.
+    Class used to validate the requests to create/update a location.
     """
-    nombre: str
-    pais: str
+    name: str
+    country: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "nombre": "Cordoba",
-                "pais": "Argentina",
+                "name": "Cordoba",
+                "country": "Argentina",
             }
         }
     }

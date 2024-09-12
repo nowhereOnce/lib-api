@@ -3,51 +3,50 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
 from src.db.main import get_session
 from http import HTTPStatus
-from .service import MuestraService
-from .schemas import MuestraCreateModel, MuestraResponseModel
+from .service import SampleService
+from .schemas import SampleCreateModel, SampleResponseModel
 
-muestras_router = APIRouter(prefix="/muestras")
+samples_router = APIRouter(prefix="/samples")
 
-#METODOS DE RUTAS PARA LAS MUESTRAS--------------------------------------------
+# SAMPLES METHODS --------------------------------------------
 
-@muestras_router.get("/", response_model=List[MuestraResponseModel]) 
-async def read_muestras(session: AsyncSession = Depends(get_session)):
-    """Obtiene todas las muestras"""
-    muestras = await MuestraService(session).get_all_muestras()
-    return muestras
+@samples_router.get("/", response_model=List[SampleResponseModel]) 
+async def read_samples(session: AsyncSession = Depends(get_session)):
+    """Gets all the samples"""
+    samples = await SampleService(session).get_all_samples()
+    return samples
 
-#modificar para los casos donde no se encuentres el id o sea del tamaño incorrecto (37 caracteres)
-@muestras_router.get("/{muestra_id}", status_code=HTTPStatus.OK)
-async def read_muestra(muestra_id: str, session: AsyncSession = Depends(get_session)):
-    """Obtiene una muestra por su UUID"""
-    muestra = await MuestraService(session).get_roca(muestra_id)
-    return muestra
+# Modify for cases where the id is: not found / incorrect length (37 characters)
+@samples_router.get("/{sample_id}", status_code=HTTPStatus.OK)
+async def read_sample(sample_id: str, session: AsyncSession = Depends(get_session)):
+    """Gets a sample by its UUID"""
+    sample = await SampleService(session).get_sample(sample_id)
+    return sample
 
-@muestras_router.post("/", status_code=HTTPStatus.CREATED)
-async def create_muestra(
-    muestra_create_data: MuestraCreateModel, session: AsyncSession = Depends(get_session)
+@samples_router.post("/", status_code=HTTPStatus.CREATED)
+async def create_sample(
+    sample_create_data: SampleCreateModel, session: AsyncSession = Depends(get_session)
 ):
-    """Crea una nueva muestra"""
-    new_muestra = await MuestraService(session).create_muestra(muestra_create_data)
+    """Creates a new sample"""
+    new_sample = await SampleService(session).create_sample(sample_create_data)
 
-    return new_muestra
+    return new_sample
 
-#modificar para los casos donde no se encuentres el id o sea del tamaño incorrecto (37 caracteres)
-#decidir si se quiere conservar el atributo updated_at o no
-#en caso de conservarlo es necesario que también se actualice la informacion del registro
-@muestras_router.put("/{muestra_id}", status_code=HTTPStatus.OK)
-async def update_muestra(
-    muestra_id: str,
-    update_data: MuestraCreateModel,
+# Modify for cases where the id is: not found / incorrect length (37 characters)
+# Modify to update the update attribute 
+@samples_router.put("/{sample_id}", status_code=HTTPStatus.OK)
+async def update_sample(
+    sample_id: str,
+    update_data: SampleCreateModel,
     session: AsyncSession = Depends(get_session),
 ):
-    """Actualiza una muestra"""
-    updated_muestra = await MuestraService(session).update_roca(muestra_id, update_data)
+    """Updates a sample"""
+    updated_sample = await SampleService(session).update_sample(sample_id, update_data)
 
-    return updated_muestra
+    return updated_sample
 
-@muestras_router.delete("/{muestra_id}", status_code=HTTPStatus.NO_CONTENT)
-async def delete_muestra(muestra_id: str, session: AsyncSession = Depends(get_session)):
-    """Borra una muestra"""
-    await MuestraService(session).delete_muestra(muestra_id)
+@samples_router.delete("/{sample_id}", status_code=HTTPStatus.NO_CONTENT)
+async def delete_sample(sample_id: str, session: AsyncSession = Depends(get_session)):
+    """Deletes a sample"""
+    await SampleService(session).delete_sample(sample_id)
     return {}

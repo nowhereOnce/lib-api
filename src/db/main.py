@@ -4,18 +4,18 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from src.config import settings
 
-# async_engine: Es el motor de base de datos asíncrono que permite realizar operaciones en PostgreSQL.
+# async_engine: Asynchronous database engine that allows performing operations in PostgreSQL.
 async_engine = create_async_engine(url=settings.POSTGRES_URL, echo=True)
 
-# init_db: Es una función que se encarga de crear las tablas en la base de datos utilizando la definición de los modelos.
+# init_db: Function responsible for creating the tables in the database using the model definitions.
 async def init_db():
-    """Create the database tables"""
+    """Creates the database tables"""
     async with async_engine.begin() as conn:
-        from .models import Book, Rocas, Localidades, Muestras
+        from .models import Rocks, Locations, Samples
 
         await conn.run_sync(SQLModel.metadata.create_all)
 
-# get_session: Es una función que proporciona sesiones de base de datos asíncronas que pueden ser usadas para ejecutar operaciones en la base de datos.
+# get_session: Function that provides asynchronous database sessions that can be used to perform operations on the database.
 async def get_session() -> AsyncSession:
     """Dependency to provide the session object"""
     async_session = sessionmaker(

@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from src.db.main import init_db
-from src.rocas.routes import rocas_router
-from src.localidades.routes import localidades_router
-from src.muestras.routes import muestras_router
+from src.rocas.routes import rocks_router
+from src.localidades.routes import locations_router
+from src.muestras.routes import samples_router
 
 
 @asynccontextmanager
@@ -15,13 +15,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="muestras_rocas",
+    title="rocks_samples",
     version="0.1.0",
-    description="API para la Plataforma del Instituto de Geología",
+    description="Insituto de Geología rocks_samples API",
     lifespan=lifespan,
 )
 
 
-app.include_router(rocas_router, tags=["rocas"])
-app.include_router(localidades_router, tags=["localidades"])
-app.include_router(muestras_router, tags=["muestras"])
+app.include_router(rocks_router, tags=["rocks"])
+app.include_router(locations_router, tags=["locations"])
+app.include_router(samples_router, tags=["samples"])

@@ -1,16 +1,15 @@
-from src.db.models import Rocas
+from src.db.models import Rocks
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
-#Verificar si es necesario que esta clase herede de la clase Rocas
-class RocaResponseModel(BaseModel):
+class RockResponseModel(BaseModel):
     """
-        Clase para validad la respuesta de roca
+        Class to validate the "rock" type response
     """
     uid: UUID
-    nombre: str
-    descripcion: str
+    name: str
+    description: str
     created_at: datetime
     updated_at: datetime
 
@@ -18,26 +17,26 @@ class RocaResponseModel(BaseModel):
         "json_schema_extra": {
             "example": {
                 "uid": "a0a0a0a0-a0a0-a0a0-a0a0-a0a0a0a0a0a0a",
-                "nombre": "Granito",
-                "descripcion": "Roca ígnea plutónica con textura granular.",
+                "name": "Granito",
+                "description": "Roca ígnea plutónica con textura granular.",
                 "created_at": "2022-01-01T00:00:00",
                 "updated_at": "2022-01-01T00:00:00",
             }
         }
     }
 
-class RocaCreateModel(BaseModel):
+class RockCreateModel(BaseModel):
     """
-    Esta clase se usa para validar las solicitudes al crear o actualizar una roca.
+    Class to validate al the requests to create/update a rock
     """
-    nombre: str
-    descripcion: str
+    name: str
+    description: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "nombre": "Granito",
-                "descripcion": "Roca ígnea plutónica con textura granular.",
+                "name": "Granito",
+                "description": "Roca ígnea plutónica con textura granular.",
             }
         }
     }

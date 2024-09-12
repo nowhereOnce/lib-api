@@ -1,58 +1,58 @@
-from src.db.models import Muestras, Rocas, Localidades
+from src.db.models import Samples, Rocks, Locations
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
 
-class MuestraResponseModel(BaseModel):
+class SampleResponseModel(BaseModel):
     """
-        Clase para validad la respuesta de muestra
+        Class to validate the "sample" type response
     """
     uid: UUID
-    corte: bool
-    lamina_delgada: bool
-    foto: str
+    cut: bool
+    thin_section: bool
+    picture: str
     created_at: datetime
     updated_at: datetime
-    nombre_roca: str
-    descripcion_roca: str
-    nombre_localidad: str
-    pais_localidad: str
+    rock_name: str
+    rock_description: str
+    location_name: str
+    location_country: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "uid": "a5b6c7d8e9f10",
-                "corte": True,
-                "lamina_delgada": True,
-                "foto": "url_foto",
+                "cut": True,
+                "thin_section": True,
+                "picture": "url_foto",
                 "created_at": "2022-01-01T00:00:00",
                 "updated_at": "2022-01-01T00:00:00",
-                "nombre_roca": "nombre_roca",
-                "descripcion_roca": "descripcion_roca",
-                "nombre_localidad": "nombre_localidad",
-                "pais_localidad": "pais_localidad"
+                "rock_name": "nombre_roca",
+                "rock_description": "descripcion_roca",
+                "location_name": "location_name",
+                "location_country": "location_country"
             }
         }
     }
 
-class MuestraCreateModel(BaseModel):
+class SampleCreateModel(BaseModel):
     """
-    Esta clase se usa para validar las solicitudes al crear o actualizar una muestra.
+    Class to validate the requests to create/update a sample.
     """
-    roca_uid: UUID
-    localidad_uid: UUID
-    corte: bool
-    lamina_delgada: bool
-    foto: str #problablemente se tenga que modificar
+    rock_uid: UUID
+    location_uid: UUID
+    cut: bool
+    thin_section: bool
+    picture: str # subject to change
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "roca_uid": "a5b6c7d8e9f10",
-                "localidad_uid": "a5b6c7d8e9f10",
-                "corte": True,
-                "lamina_delgada": True,
-                "foto": "url_foto",
+                "rock_uid": "a5b6c7d8e9f10",
+                "location_uid": "a5b6c7d8e9f10",
+                "cut": True,
+                "thin_section": True,
+                "picture": "url_picture",
             }
         }
     }

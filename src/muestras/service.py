@@ -1,95 +1,95 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.db.models import Muestras, Rocas, Localidades
-from .schemas import MuestraCreateModel, MuestraResponseModel
+from src.db.models import Samples, Rocks, Locations
+from .schemas import SampleCreateModel, SampleResponseModel
 from sqlmodel import select
 
 
-class MuestraService:
+class SampleService:
     """
-    Esta clase provee los metodos para crear, leer, actualizar, y eliminar muestras
+    This class provides theh methods to create, read, update and delete a sample
     """
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
 
-    async def get_all_muestras(self):
+    async def get_all_samples(self):
         """
-        Obtiene una lista con todas las muestras
+        Gets a list with all the samples
 
         Returns:
-            list: una lista de muestras
+            list: list of samples
         """
-        statement = select(Muestras, Rocas, Localidades).join(Muestras.roca).join(Muestras.localidad).order_by(Muestras.created_at)
+        statement = select(Samples, Rocks, Locations).join(Samples.rock).join(Samples.location).order_by(Samples.created_at)
         result = await self.session.exec(statement)
-        return [MuestraResponseModel(
-            uid=muestra.uid, 
-            corte=muestra.corte,
-            lamina_delgada=muestra.lamina_delgada,
-            foto=muestra.foto,
-            created_at=muestra.created_at,
-            updated_at=muestra.updated_at,
-            nombre_roca=muestra.roca.nombre,
-            descripcion_roca=muestra.roca.descripcion,
-            nombre_localidad=muestra.localidad.nombre,
-            pais_localidad=muestra.localidad.pais
-            ) for muestra, _, _ in result]
+        return [SampleResponseModel(
+            uid = sample.uid, 
+            cut = sample.cut,
+            thin_section = sample.thin_section,
+            picture = sample.picture,
+            created_at = sample.created_at,
+            updated_at = sample.updated_at,
+            rock_name = sample.rock.name,
+            rock_description = sample.rock.description,
+            location_name = sample.location.name,
+            location_country = sample.location.country
+            ) for sample, _, _ in result]
 
-    async def create_muestra(self, muestra_create_data: MuestraCreateModel):
+    async def create_sample(self, sample_create_data: SampleCreateModel):
         """
-        Crea una nueva muestra en la base de datos
+        Creates a new sample in the database
 
         Args:
-            muestra_create_data (MuestraCreateModel): data para crear una nueva muestra
+            sample_create_data (SampleCreateModel): data to create a new sample
 
         Returns:
-            Muestras: una nueva muestra
+            Samples: a new sample
         """
-        new_muestra = Muestras(**muestra_create_data.model_dump())
-        self.session.add(new_muestra)
+        new_sample = Samples(**sample_create_data.model_dump())
+        self.session.add(new_sample)
         await self.session.commit()
-        return new_muestra
+        return new_sample
 
-    async def get_muestra(self, muestra_uid: str):
-        """Obtiene una muestra por su UUID.
+    async def get_sample(self, sample_uid: str):
+        """Gets a sample by its UUID.
 
         Args:
-            muestra_uid (str): el UUID de la muestra
+            sample_uid (str): sample's UUID
 
         Returns:
-            Muestras: un objeto muestra
+            Samples: sample object
         """
-        statement = select(Muestras).where(Muestras.uid == muestra_uid)
+        statement = select(Samples).where(Samples.uid == sample_uid)
         result = await self.session.exec(statement)
         return result.first()
 
-    async def update_muestra(self, muestra_uid: str, muestra_update_data: MuestraCreateModel):
-        """Actualiza una muestra
+    async def update_sample(self, sample_uid: str, sample_update_data: SampleCreateModel):
+        """Updates a sample
 
         Args:
-            muestra_uid (str): el UUID de la muestra
-            muestra_update_data (MuestraCreateModel): la data para actualizar la muestra
+            sample_uid (str): sample's UUID
+            sample_update_data (SampleCreateModel): data to update the sample
 
         Returns:
-            Muestras: la muestra actualizada
+            Samples: updated sample
         """
 
-        statement = select(Muestras).where(Muestras.uid == muestra_uid)
+        statement = select(Samples).where(Samples.uid == sample_uid)
         result = await self.session.exec(statement)
-        muestra = result.first()
-        for key, value in muestra_update_data.model_dump().items():
-            setattr(muestra, key, value)
+        sample = result.first()
+        for key, value in sample_update_data.model_dump().items():
+            setattr(sample, key, value)
         await self.session.commit()
-        return muestra
+        return sample
 
-    async def delete_muestra(self, muestra_uid):
-        """Borra una muestra
+    async def delete_sample(self, sample_uid):
+        """Deletes a sample
 
         Args:
-            muestra_uid (str): el UUID de la muestra
+            sample_uid (str): sample's UUID
         """
-        statement = select(Muestras).where(Muestras.uid == muestra_uid)
+        statement = select(Samples).where(Samples.uid == sample_uid)
         result = await self.session.exec(statement)
-        muestra = result.first()
-        await self.session.delete(muestra)
+        sample = result.first()
+        await self.session.delete(sample)
         await self.session.commit()
