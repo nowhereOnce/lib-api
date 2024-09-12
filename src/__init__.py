@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from src.db.main import init_db
-from src.rocas.routes import rocks_router
-from src.localidades.routes import locations_router
-from src.muestras.routes import samples_router
+from src.rocks.routes import rocks_router
+from src.locations.routes import locations_router
+from src.samples.routes import samples_router
 
 
 @asynccontextmanager
