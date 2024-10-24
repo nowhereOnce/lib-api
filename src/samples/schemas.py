@@ -39,8 +39,10 @@ class SampleCreateModel(BaseModel):
     """
     Class to validate the requests to create/update a sample.
     """
-    rock_uid: UUID
-    location_uid: UUID
+    rock_name: str #MODIFIED: so the create_sample function creates a register with the name of a rock instead of the UUID
+    description: str #ADDED: we are probably going to move this attribute from table rocks to table samples
+    location_name: str #MODIFIED: so the create_sample function creates a register with the name and the country of a location instead of the UUID
+    location_country: str #ADDED
     cut: bool
     thin_section: bool
     picture: str # subject to change
@@ -48,8 +50,10 @@ class SampleCreateModel(BaseModel):
     model_config = {
         "json_schema_extra": {
             "example": {
-                "rock_uid": "a5b6c7d8e9f10",
-                "location_uid": "a5b6c7d8e9f10",
+                "rock_name": "roca de prueba",
+                "description": "descripcion de prueba para la roca",
+                "location_name": "Madrid",
+                "location_country": "España",
                 "cut": True,
                 "thin_section": True,
                 "picture": "url_picture",
