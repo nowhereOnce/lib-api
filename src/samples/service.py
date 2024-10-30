@@ -12,101 +12,86 @@ class SampleService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-
-    async def get_all_samples(self):
+    async def get_or_create_rock(self, rock_name: str, description: str):
         """
-        Gets a list with all the samples
-
-        Returns:
-            list: list of samples
-        """
-        statement = select(Samples, Rocks, Locations).join(Samples.rock).join(Samples.location).order_by(Samples.created_at)
-        result = await self.session.exec(statement)
-        return [SampleResponseModel(
-            uid = sample.uid, 
-            cut = sample.cut,
-            thin_section = sample.thin_section,
-            picture = sample.picture,
-            created_at = sample.created_at,
-            updated_at = sample.updated_at,
-            rock_name = sample.rock.name,
-            rock_description = sample.rock.description,
-            location_name = sample.location.name,
-            location_country = sample.location.country
-            ) for sample, _, _ in result]
-
-    # MODIFIED: to first check if the corresponding rock and location already exist in the BD:
-    # if not: creates the rock and/or creates the location 
-    # if it/they exist: uses the rock and location to create the new sample
-    async def create_sample(self, sample_create_data: SampleCreateModel):
-        """
-        Creates a new sample in the database
+        Retrieves a rock from the database or creates it if it doesn't exist.
 
         Args:
-            sample_create_data (SampleCreateModel): data to create a new sample
+            rock_name (str): The name of the rock.
+            description (str): The description of the rock.
 
         Returns:
-            Samples: a new sample
+            Rocks: The existing or newly created rock object.
         """
-        #Looks for a rock in the DB
-        rock_statement = select(Rocks).where(Rocks.name == sample_create_data.rock_name)
+        rock_statement = select(Rocks).where(Rocks.name == rock_name)
         rock_result = await self.session.exec(rock_statement)
-        rock = rock_result.first() #Rocks object
-        
-        #If it wasnt in the db then it is created
+        rock = rock_result.first()
+
         if not rock:
-            rock = Rocks(name=sample_create_data.rock_name, description=sample_create_data.description)
+            rock = Rocks(name=rock_name, description=description)
             self.session.add(rock)
             await self.session.commit()
             await self.session.refresh(rock)
-            print("\n[DEBUGGING] INSERTED ROCK's UID : " + str(rock.model_dump()["uid"])) #DEBUGGING
-            print("[DEBUGGING] THE INSERTION WAS MADE SUCCESSFULLY \n") #DEBUGGING
-        
-        print("\n[DEBUGGING] FOUND ROCK's UID: " + str(rock.model_dump()["uid"])) #DEBUGGING
-        
-        # #Looks for a location in the DB (this line most likely will not work idk :c)
-        location_statement = select(Locations).where(Locations.name == sample_create_data.location_name)
+            print(f"\n[DEBUGGING] INSERTED ROCK's UID : {rock.uid}")
+
+        print(f"\n[DEBUGGING] FOUND ROCK's UID: {rock.uid}")
+        return rock
+
+    async def get_or_create_location(self, location_name: str, country: str):
+        """
+        Retrieves a location from the database or creates it if it doesn't exist.
+
+        Args:
+            location_name (str): The name of the location.
+            country (str): The country of the location.
+
+        Returns:
+            Locations: The existing or newly created location object.
+        """
+        location_statement = select(Locations).where(Locations.name == location_name)
         location_result = await self.session.exec(location_statement)
-        location = location_result.first() #Locations object
-        
-        # #If it wasnt in the db then it is created
+        location = location_result.first()
+
         if not location:
-            location = Locations(name=sample_create_data.location_name, country=sample_create_data.location_country)
+            location = Locations(name=location_name, country=country)
             self.session.add(location)
             await self.session.commit()
             await self.session.refresh(location)
-            print("\n[DEBUGGING] ISERTED LOCATION's UID: " + str(location.model_dump()["uid"])) #DEBUGGING
-            print("[DEBUGGING] THE INSERTION WAS MADE SUCCESSFULLY \n") #DEBUGGING
-        
-        print("\n[DEBUGGING] FOUND LOCATION's UID: " + str(location.model_dump()["uid"])) #DEBUGGING
-        
-        # #Creates the new sample into the DB.
+            print(f"\n[DEBUGGING] INSERTED LOCATION's UID: {location.uid}")
+
+        print(f"\n[DEBUGGING] FOUND LOCATION's UID: {location.uid}")
+        return location
+
+    async def create_sample(self, sample_create_data: SampleCreateModel):
+        """
+        Creates a new sample in the database.
+
+        Args:
+            sample_create_data (SampleCreateModel): The data to create a new sample.
+
+        Returns:
+            Samples: The newly created sample object.
+        """
+        rock = await self.get_or_create_rock(
+            sample_create_data.rock_name, sample_create_data.description
+        )
+        location = await self.get_or_create_location(
+            sample_create_data.location_name, sample_create_data.location_country
+        )
+
         new_sample = Samples(
-            rock_uid = rock.model_dump()["uid"],
-            location_uid=location.model_dump()["uid"],
+            rock_uid=rock.uid,
+            location_uid=location.uid,
             cut=sample_create_data.cut,
-            thin_section= sample_create_data.thin_section,
+            thin_section=sample_create_data.thin_section,
             picture=sample_create_data.picture
-            )
+        )
         
         self.session.add(new_sample)
         await self.session.commit()
         await self.session.refresh(new_sample)
+        
         return new_sample
-
-
-    async def get_sample(self, sample_uid: str):
-        """Gets a sample by its UUID.
-
-        Args:
-            sample_uid (str): sample's UUID
-
-        Returns:
-            Samples: sample object
-        """
-        statement = select(Samples).where(Samples.uid == sample_uid)
-        result = await self.session.exec(statement)
-        return result.first()
 
     async def update_sample(self, sample_uid: str, sample_update_data: SampleCreateModel):
         """Updates a sample
