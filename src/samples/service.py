@@ -34,6 +34,19 @@ class SampleService:
             location_country = sample.location.country
             ) for sample, _, _ in result]
 
+    async def get_sample(self, sample_uid: str):
+        """Gets a sample by its UUID.
+
+        Args:
+            sample_uid (str): sample's UUID
+
+        Returns:
+            Samples: sample object
+        """
+        statement = select(Samples).where(Samples.uid == sample_uid)
+        result = await self.session.exec(statement)
+        return result.first()
+
     async def get_or_create_rock(self, rock_name: str, description: str):
         """
         Retrieves a rock from the database or creates it if it doesn't exist.
