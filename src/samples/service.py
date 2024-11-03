@@ -107,8 +107,22 @@ class SampleService:
         statement = select(Samples).where(Samples.uid == sample_uid)
         result = await self.session.exec(statement)
         sample = result.first()
-        for key, value in sample_update_data.model_dump().items():
-            setattr(sample, key, value)
+
+        rock = await self.get_or_create_rock(
+            sample_update_data.rock_name, sample_update_data.description
+        )
+
+        location = await self.get_or_create_location(
+            sample_update_data.location_name, sample_update_data.location_country
+        )
+        
+        # Updates every attribute of the selected sample register
+        setattr(sample, "rock_uid", rock.uid)
+        setattr(sample, "location_uid", location.uid)
+        setattr(sample, "cut", sample_update_data.cut)
+        setattr(sample, "thin_section", sample_update_data.thin_section)
+        setattr(sample, "picture", sample_update_data.picture)
+        
         await self.session.commit()
         return sample
 
