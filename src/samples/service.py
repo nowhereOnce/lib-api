@@ -2,6 +2,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db.models import Samples, Rocks, Locations
 from .schemas import SampleCreateModel, SampleResponseModel
 from sqlmodel import select
+from sqlalchemy import and_
 
 
 class SampleService:
@@ -58,7 +59,7 @@ class SampleService:
         Returns:
             Rocks: The existing or newly created rock object.
         """
-        rock_statement = select(Rocks).where(Rocks.name == rock_name)
+        rock_statement = select(Rocks).where(and_(Rocks.name == rock_name, Rocks.description == description))
         rock_result = await self.session.exec(rock_statement)
         rock = rock_result.first()
 
@@ -83,7 +84,7 @@ class SampleService:
         Returns:
             Locations: The existing or newly created location object.
         """
-        location_statement = select(Locations).where(Locations.name == location_name)
+        location_statement = select(Locations).where(and_(Locations.name == location_name, Locations.country == country))
         location_result = await self.session.exec(location_statement)
         location = location_result.first()
 
