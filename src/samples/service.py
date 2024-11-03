@@ -12,6 +12,28 @@ class SampleService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_all_samples(self):
+        """
+        Gets a list with all the samples
+
+        Returns:
+            list: list of samples
+        """
+        statement = select(Samples, Rocks, Locations).join(Samples.rock).join(Samples.location).order_by(Samples.created_at)
+        result = await self.session.exec(statement)
+        return [SampleResponseModel(
+            uid = sample.uid, 
+            cut = sample.cut,
+            thin_section = sample.thin_section,
+            picture = sample.picture,
+            created_at = sample.created_at,
+            updated_at = sample.updated_at,
+            rock_name = sample.rock.name,
+            rock_description = sample.rock.description,
+            location_name = sample.location.name,
+            location_country = sample.location.country
+            ) for sample, _, _ in result]
+
     async def get_or_create_rock(self, rock_name: str, description: str):
         """
         Retrieves a rock from the database or creates it if it doesn't exist.
